@@ -10,7 +10,7 @@ description: >
   gamma exposure / max pain / options chain analysis, or any single-stock
   options play. Concrete strikes, IV-aware structures, probability-weighted
   scenarios from 24 pitfalls, a gamma framework, and case studies (INTC,
-  Mag-7, APP, NOK, TSEM, CBRS, SNOW). Market data via Bloomberg Terminal
+  Mag-7, APP, NOK, TSEM, CBRS, SNOW, MDB). Market data via Bloomberg Terminal
   (xbbg) + TradingView. Chinese response, English technical terms. **Check 3 axes before any
   structure**: vega sign matches IVR (pitfall 19); delta matches thesis;
   asymmetry — bull-conviction ≥ 4 (pitfall 24) forbids Jade Lizard / IC /
@@ -103,7 +103,7 @@ This skill uses lazy loading — read individual reference files only when relev
 | `references/price-action-framework.md` | Orderbook microstructure mental model — buy/sell imbalance, target-price divergence, vacuum zones, consensus shifts, float composition. Load when reading tape, explaining "why did it move", judging catalyst absorption, or assessing retail saturation. |
 | `references/pitfalls/README.md` | Index of 24 trading pitfalls with quick lookup by trade type. |
 | `references/pitfalls/NN-*.md` | Individual pitfall rules — load only when a relevant trade situation arises. |
-| `references/ticker/README.md` | Index of trade case studies (INTC, Mag-7, APP, NOK, TSEM, CBRS, SNOW). |
+| `references/ticker/README.md` | Index of trade case studies (INTC, Mag-7, APP, NOK, TSEM, CBRS, SNOW, MDB). |
 | `references/ticker/<name>.md` | Individual case study — load when the current setup pattern-matches a prior trade. |
 
 ## When to Read Which File
