@@ -22,8 +22,10 @@ plugins/
         README.md         # Skill documentation
         references/       # Lazy-loaded reference content
           strategies.md
-          pitfalls/       # 15 trading pitfalls (one file per rule)
-          ticker/         # Closed trade case studies (INTC, Mag-7, APP)
+          gamma-framework.md
+          price-action-framework.md
+          pitfalls/       # 24 trading pitfalls (one file per rule)
+          ticker/         # Trade case studies (INTC, Mag-7, APP, NOK, TSEM, CBRS, SNOW, MDB)
 ```
 
 ## How the skill works
@@ -47,7 +49,7 @@ Step-by-step instructions, structure-to-regime quick reference, and the lazy-loa
 ## Reference Files
 
 - `references/strategies.md` — always-relevant framework
-- `references/pitfalls/README.md` — index of 15 pitfalls
+- `references/pitfalls/README.md` — index of 24 pitfalls
 - `references/ticker/README.md` — index of case studies
 ```
 
@@ -68,7 +70,7 @@ Step-by-step instructions, structure-to-regime quick reference, and the lazy-loa
 Users install via:
 
 ```bash
-npx plugins add himself65/trade-skills
+npx plugins add shawnjiang619/trade-skills
 ```
 
 When a skill is invoked as a plugin, it is namespaced as `<plugin-name>:<skill-name>` (e.g., `/trade:trade`).
@@ -76,4 +78,4 @@ When a skill is invoked as a plugin, it is namespaced as `<plugin-name>:<skill-n
 ## Important constraints
 
 - **No trade execution.** All advice in this skill is read-only analysis. Never generate code that places trades.
-- **Market data priority:** For options chains and stock quotes, use the TradingView desktop reader (`finance-data-providers:tradingview-reader` skill) FIRST. Fall back to the Funda AI API (`finance-data-providers:funda-data` skill) for data TradingView cannot provide (fundamentals, filings, transcripts, analyst estimates, options flow/GEX, supply chain, sentiment, Polymarket, congressional trades, economics, etc.). Do not substitute yfinance, web search, or guesses.
+- **Market data priority:** Use the local **Bloomberg Terminal via `xbbg`** FIRST (raw pulls + the `C:\blp\data\bbg_trade.py` helper for spot/GEX/max-pain/IV-Rank/flow-proxy). Use the **TradingView desktop reader** (`finance-data-providers:tradingview-reader`) as a secondary source, notably for weeklies (Bloomberg `opt_chain` returns monthlies + LEAPS only). Do **not** use Funda AI, yfinance, web search, or guesses when Bloomberg can answer. State coverage gaps (social/Reddit/X sentiment, Polymarket, congressional trades, earnings-call transcripts, curated smart-money flow) as unavailable rather than fabricating.
