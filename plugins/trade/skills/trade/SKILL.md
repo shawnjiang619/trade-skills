@@ -10,8 +10,8 @@ description: >
   gamma exposure / max pain / options chain analysis, or any single-stock
   options play. Concrete strikes, IV-aware structures, probability-weighted
   scenarios from 24 pitfalls, a gamma framework, and case studies (INTC,
-  Mag-7, APP, NOK, TSEM, CBRS, SNOW). Market data via TradingView + Funda
-  AI. Chinese response, English technical terms. **Check 3 axes before any
+  Mag-7, APP, NOK, TSEM, CBRS, SNOW). Market data via Bloomberg Terminal
+  (xbbg) + TradingView. Chinese response, English technical terms. **Check 3 axes before any
   structure**: vega sign matches IVR (pitfall 19); delta matches thesis;
   asymmetry — bull-conviction ≥ 4 (pitfall 24) forbids Jade Lizard / IC /
   Calendar regardless of IV. Pitfall 7 fixes vega sign, not structure.
@@ -23,7 +23,7 @@ Active US-equity options trader's personal knowledge base. Concrete strikes, pro
 
 ## Hard Rules (read before any prediction or structure recommendation)
 
-1. **Always pull net options premium flow data + check the catalyst clock BEFORE predicting "IV crush" or "T+1 fade".** Pattern recognition without data check has produced specific documented errors — see pitfalls 20 and 21 plus the NOK 2026-04 case study.
+1. **Always pull net options premium flow data (now a Bloomberg volume/OI proxy — directional only, weight accordingly) + check the catalyst clock BEFORE predicting "IV crush" or "T+1 fade".** Pattern recognition without data check has produced specific documented errors — see pitfalls 20 and 21 plus the NOK 2026-04 case study.
 
 2. **Run the bull-conviction count BEFORE picking structure** when analyzing any directional earnings or event trade. If count ≥ 4 (see `references/strategies.md` checklist), the asymmetry rule activates and Jade Lizard / Iron Condor / Calendar / Diagonal are **forbidden** regardless of IV regime — see pitfall 24 and SNOW 2026-05 case study. "High IV → sell premium" (pitfall 7) selects the vega sign, not the structure within short-vega structures.
 
@@ -37,9 +37,25 @@ Active US-equity options trader's personal knowledge base. Concrete strikes, pro
 
 ## Data Access
 
-**MUST use Funda AI API for all market data** — quotes, options chains, IV/Greeks, GEX, flow, fundamentals, sentiment, congressional trades, earnings transcripts. Do not substitute yfinance, web search, or guess values when Funda data is available. Use the `funda-data` skill (or `finance-data-providers:funda-data`) to fetch.
+**Primary market-data source is the local Bloomberg Terminal via `xbbg`.** Do NOT use Funda AI, yfinance, or web-scraped/guessed values when Bloomberg can answer. The Terminal must be running and logged in (Desktop API on `localhost`). Two surfaces:
 
-**Credentials live in the root repo `.env`, not the worktree.** When running inside a worktree (path matches `.claude/worktrees/*`), the worktree itself has no `.env` — resolve to the main repo's `.env` by stripping the `.claude/worktrees/<name>` suffix from the current working directory.
+1. **Raw Bloomberg pulls** — quotes, fundamentals, historical series, option chains, Greeks, estimates. Use the `xbbg-bloomberg` skill (`C:\blp\data\xbbgapiskill.md`) for field mnemonics, ticker conventions, and recipes. ⚠ On this machine (pandas 3.x) xbbg returns **narwhals long-format** — always normalize through the `wide()` shim documented there.
+
+2. **Derived trade metrics** — run the helper `C:\blp\data\bbg_trade.py`, which computes the numbers these rules depend on directly from the equity options chain:
+   ```bash
+   python C:\blp\data\bbg_trade.py snapshot <TICKER>   # spot, GEX, max pain, IV Rank, flow proxy
+   # individual: spot | gex | maxpain | ivrank | flow   flags: --max-dte 45 --mny 0.20 --expiry MM/DD/YY --lookback 252
+   ```
+   | Need | How |
+   |---|---|
+   | Spot / quote | `spot` (or `xbbg` `bdp px_last/px_bid/px_ask`) |
+   | Chain + Greeks + OI | `xbbg` `bds opt_chain` → enrich (see `build_chain_frame`) |
+   | Dealer GEX, gamma-flip strike | `gex` — calls +γ / puts −γ convention; a **model**, not ground truth |
+   | Max pain | `maxpain` |
+   | IV Rank | `ivrank` — equity-level 30d ATM implied-vol history |
+   | Net options flow | `flow` — ⚠ volume/OI **proxy**, NOT trade-classified smart-money flow |
+
+**Coverage gaps vs the old Funda source** (do not fabricate — state they're unavailable or source elsewhere): social/Reddit/X sentiment, Polymarket, congressional trades, earnings-call transcripts, curated smart-money flow. Bloomberg `opt_chain` also returns **monthlies + LEAPS only, no weeklies** — short-dated gamma/pinning is limited to the nearest monthly.
 
 ## Response Rules
 
